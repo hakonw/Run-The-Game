@@ -10,7 +10,7 @@ using System.Windows.Forms;
 
 namespace GameGameGameV1GernGame {
     public partial class MainWindow : Form {
-        bool flip_is_right = false;
+        private bool flip_is_right = false;
         private int antijump = 0;
 
         List<Panel> blockList = new List<Panel>();
@@ -34,15 +34,15 @@ namespace GameGameGameV1GernGame {
             InitializeComponent();
 
             reset();
-            Settings.gameover = true;
-            Menu m = new Menu();
-            //m.menuBackground(this);
+            UpdateScreen(null, null);
+            new Menu().creation(this, true);
 
 
         }
 
         private void MainWindow_KeyDown(object sender, KeyEventArgs e) {
             Input.ChangeState(e.KeyCode, true);
+            if (Input.KeyPressed(Settings.quit)) { Application.Exit(); } // Exits the game
         }
 
         private void MainWindow_KeyUp(object sender, KeyEventArgs e) {
@@ -50,25 +50,49 @@ namespace GameGameGameV1GernGame {
         }
 
         private void UpdateScreen(object sender, EventArgs e) {
+            //if (!_tick.Enabled) { _tick.Enabled = true; }
+
+
+
+            if (Input.KeyPressed(Keys.Escape)) { new Menu().creation(this); } // Goes to the meny
+            if (Input.KeyPressed(Settings.restart)) { reset(); } // resets
 
             if (Settings.gameover) {// checks if gameover
-                if (Input.KeyPressed(Keys.Escape)) { Application.Exit(); } // quits
-                                    
-
+                
             } else {
-                if (Input.KeyPressed(Settings.boost) && Settings.mspeed == Settings.mspeedD) { Settings.mspeed = Settings.mspeedB; } else if (!Input.KeyPressed(Settings.boost) && Settings.mspeed != Settings.mspeedD) { Settings.mspeed = Settings.mspeedD; }
+                if (outside(this.player)) {
+                    Settings.gameover = true;
+                }
+                #region movement controll
+                if (Input.KeyPressed(Settings.boost) && Settings.mspeed == Settings.mspeedD) { Settings.mspeed = Settings.mspeedB; } else if ((!Input.KeyPressed(Settings.boost) || !Input.KeyPressed(Settings.sneak)) && Settings.mspeed != Settings.mspeedD) { Settings.mspeed = Settings.mspeedD; } //used to increas the speed
+                if (Input.KeyPressed(Settings.sneak) && Settings.mspeed == Settings.mspeedD) { Settings.mspeed = Settings.mspeedB/4; } //used to reduce the speed
                 if (Input.KeyPressed(Settings.left)) { MovePlayer("left"); }
                 if (Input.KeyPressed(Settings.right)) { MovePlayer("right"); }
-                if (Input.KeyPressed(Settings.up)) { MovePlayer("up", 10, false, 0); }
+                if (Input.KeyPressed(Settings.up)) { MovePlayer("up", 10, false, 0); } // moves player up 10*2(movement pr tick) pr tick, not forced (checking for collision), will not be boosted
                 if (Input.KeyPressed(Settings.down)) { MovePlayer("down"); }
-                if (Input.KeyPressed(Keys.R)) { reset(); } // resets
-                if (Input.KeyPressed(Keys.Escape)) { Application.Exit(); } // quits
-                if (Input.KeyPressed(Keys.Z)) { blockList.Add(block(this.player.Location.X + this.player.Width / 4, this.player.Location.Y + this.player.Height + 1, 32, 32, Color.Brown, Settings.boxt)); }
 
+                if (Input.KeyPressed(Keys.S)) {
+                    Panel p_1 = block(this.player.Location.X + this.player.Width / 4, this.player.Location.Y + this.player.Height + 1, Settings.boxw, Settings.boxh, Color.Brown, Settings.boxt);
+                    if (p_1 != null) { blockList.Add(p_1); }
+                }
+                if (Input.KeyPressed(Keys.W)) {
+                    Panel p_1 = block(this.player.Location.X + this.player.Width / 4, this.player.Location.Y - Settings.boxh, Settings.boxw, Settings.boxh, Color.Brown, Settings.boxt);
+                    if (p_1 != null) { blockList.Add(p_1); }
+                }
+                if (Input.KeyPressed(Keys.A)) {
+                    Panel p_1 = block(this.player.Location.X - Settings.boxw, this.player.Location.Y + this.player.Height/4, Settings.boxw, Settings.boxh, Color.Brown, Settings.boxt);
+                    if (p_1 != null) { blockList.Add(p_1); }
+                }
+                if (Input.KeyPressed(Keys.D)) {
+                    Panel p_1 = block(this.player.Location.X + this.player.Width, this.player.Location.Y + this.player.Height / 4, Settings.boxw, Settings.boxh, Color.Brown, Settings.boxt);
+                    if (p_1 != null) { blockList.Add(p_1); }
+                }
+                #endregion movement controll
             }
-            MovePlayer("down", 2);
+            MovePlayer("down", 2); //  Non-Accelerating gravity,  might change to more real accelerating gravity
 
         } // runs every tick
+
 
 
         private void MovePlayer(string direction = null, int m = 3, bool force = false, int boost = 1) {
@@ -95,7 +119,9 @@ namespace GameGameGameV1GernGame {
                     default:
                         break;
                 }
-                if (collisioncheck(this.player, blockList)) { MovePlayer(direction, -m/Settings.mspeed, true); antijump = 0; }
+                if (collisioncheck(this.player, blockList)) { try { MovePlayer(direction, -m / Settings.mspeed, true); } catch (System.StackOverflowException) { /* "infinite loop" */ MovePlayer(direction, -m*2 / Settings.mspeed, true); } antijump = 0; }
+
+                labelTick.Text = "Score: "+Convert.ToString(Settings.Score++);  // tells and keeps track of the core
 
             }
         } // used to move the player
@@ -111,7 +137,7 @@ namespace GameGameGameV1GernGame {
         } // used to flip image on player
 
 
-        private Panel block(int x, int y, int width, int height, Color? c = null, Image img = null) {
+        private Panel block(int x, int y, int width = 32, int height = 32, Color? c = null, Image img = null) {
             this.panel = new System.Windows.Forms.Panel();
             this.panel.BackColor = c ?? Color.Transparent;
             this.panel.Location = new Point(x, y);
@@ -121,6 +147,16 @@ namespace GameGameGameV1GernGame {
             this.panel.BackgroundImage = img;
             this.panel.BackgroundImageLayout = ImageLayout.Stretch;
             this.Controls.Add(this.panel);
+
+            //removes block if it collides with another one
+            foreach (Panel p in blockList) {
+                if (p == null || this.panel == null) { break; }
+                if (this.panel.Bounds.IntersectsWith(p.Bounds)) {
+                    this.Controls.Remove(this.panel);
+                    this.panel.Dispose();
+                    return null;
+                }
+            }
             return this.panel;
         } // used to create a block on the screen
 
@@ -128,6 +164,14 @@ namespace GameGameGameV1GernGame {
             for(int i = 0; i < 1 + this.Width / Settings.boxw; i++) {
                 blockList.Add(block(i*Settings.boxw, this.Height-Settings.boxh, Settings.boxh, Settings.boxw, Color.Brown, Settings.boxt));
             }
+        }
+
+        private bool outside(Panel p) {
+            if ((p.Location.X > -p.Width && p.Location.X < (this.Width)) && (p.Location.Y > -p.Height && p.Location.Y < (this.Height))) {
+                return false;
+            }
+            Console.WriteLine(p.Location.X + " thisX | windowX " + this.Height + " || " + p.Location.Y + " thisY | windowY " + this.Width);
+            return true;
         }
 
         private bool collisioncheck(Panel p, List<Panel> LP) {
@@ -138,20 +182,13 @@ namespace GameGameGameV1GernGame {
                 }
             }
             return false;
-        }
+        } // used to check if collision between two panels
 
-        private void reset() {
-            /*
-            for (int i = 0; i < blockList.Count; i++) {
-                if (blockList[i] == null) { break; }
-                blockList[i].Dispose();
-                //blockList[i] = null; commented out, fucked up my chi
-                blockList.RemoveAt(i); // or blockList.Remove(blockList[i]);
-            }
-            */
+       private void reset() {
             foreach (Panel pp in blockList) {
+                if (pp == null || blockList == null) { break; }
                 pp.Dispose();
-            }
+            } // goes thru all the panels in the lists and disposes of them
             blockList.Clear();
 
             new Settings(); //intilialize the settings
@@ -163,6 +200,8 @@ namespace GameGameGameV1GernGame {
             drawplatform(); // redraw the platform
             this.player.Location = new Point(this.Width/2, this.Height/2); // posission of player
             Settings.gameover = false;
+            Settings.Score = 0;
+            Input.ChangeState(Settings.restart, false);
         }
 
         //end

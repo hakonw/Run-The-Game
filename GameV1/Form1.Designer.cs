@@ -26,6 +26,7 @@
             this.components = new System.ComponentModel.Container();
             this.player = new System.Windows.Forms.Panel();
             this._tick = new System.Windows.Forms.Timer(this.components);
+            this.labelTick = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // player
@@ -42,26 +43,40 @@
             // 
             this._tick.Tick += new System.EventHandler(this.UpdateScreen);
             // 
+            // labelTick
+            // 
+            this.labelTick.AutoSize = true;
+            this.labelTick.BackColor = System.Drawing.Color.Transparent;
+            this.labelTick.Location = new System.Drawing.Point(0, 0);
+            this.labelTick.Name = "labelTick";
+            this.labelTick.Size = new System.Drawing.Size(38, 13);
+            this.labelTick.TabIndex = 1;
+            this.labelTick.Text = "Score:";
+            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1029, 525);
+            this.Controls.Add(this.labelTick);
             this.Controls.Add(this.player);
+            this.Cursor = System.Windows.Forms.Cursors.Default;
             this.DoubleBuffered = true;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "MainWindow";
-            this.Text = "Form1";
+            this.Text = "The Game?";
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.MainWindow_KeyDown);
             this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.MainWindow_KeyUp);
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
         #endregion
 
         private System.Windows.Forms.Panel player;
-        private System.Windows.Forms.Timer _tick;
+        public System.Windows.Forms.Timer _tick;
+        private System.Windows.Forms.Label labelTick;
     }
 }
 

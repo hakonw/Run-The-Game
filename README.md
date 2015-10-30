@@ -3,11 +3,11 @@ A basic game made for a school assigment
 
 Usage
 --------------
-Press ESC to close the game
+Press ESC to open the menu
 Press R to restart the game
 Use the arrowkeys to move
 Use SPACE for boost
-Use Z to place blocks under the character
+Use WASD to place blocks over, under, left and right for the character
 
 Installation
 -------------
