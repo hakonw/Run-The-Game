@@ -20,8 +20,6 @@ namespace GameGameGameV1GernGame {
         Quit
     } //will maby change to this later
 
-
-
     class Settings {
 
     #region get;set values
@@ -48,8 +46,11 @@ namespace GameGameGameV1GernGame {
         public static int boxw { get; set; }
         public static int boxh { get; set; }
         public static System.Drawing.Image boxt { get; set; }
+        //enemy properties
+        public static System.Drawing.Image enemyt { get; set; }
+        public static int espeed { get; set; }
         //other properties
-        public static MenuOptions mOptions { get; set; }
+        //public static MenuOptions mOptions { get; set; }
 
         #endregion
 
@@ -58,9 +59,9 @@ namespace GameGameGameV1GernGame {
             //world properties 
             gameover = false;
             tspeed = 32; // ticks
-            tickjump = 10; //ticks the jump will work
-            restart = Keys.R; // .._.. sneak
-            quit = Keys.Q; // .._.. sneak
+            tickjump = 10; // ammount of ticks you can jump
+            restart = Keys.R; // restart button
+            quit = Keys.Q; // quit button
 
             //player properties
             mspeed = 2; // this is pixelmovement*2 pr tick
@@ -78,6 +79,10 @@ namespace GameGameGameV1GernGame {
             boxh = boxw; // pixel height of the box
             boxt = BasicGameV1.Properties.Resources.crate_0; // box texture
             playert = BasicGameV1.Properties.Resources.player_0; // player texture
+
+            //enemy properties
+            enemyt = BasicGameV1.Properties.Resources.enemy_0;
+            espeed = 2;
         }
 
     }

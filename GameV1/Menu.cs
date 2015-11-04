@@ -21,22 +21,22 @@ namespace GameGameGameV1GernGame {
             this.panel = new System.Windows.Forms.Panel();
             this.panel.BackColor = Color.White;
             this.panel.Location = new Point(0, 0);
-            this.panel.Size = new Size(f.Width, f.Height);
+            this.panel.Size = new Size(f.Width+40, f.Height+40);
             this.panel.Name = "Menu Bakground";
             this.panel.Visible = true;
             this.panel.Enabled = true;
             f.Controls.Add(this.panel);
             this.panel.BringToFront();
-        } // method to make the menu
+        } // method to make the menu background
 
-        private Label menuText(MainWindow f, int x, int y, string t, int sx = 200, int sy = 100) {
+        private Label menuText(MainWindow f, int x, int y, string t, int sx = 200, int sy = 100, float sz = 30f) {
             this.label = new System.Windows.Forms.Label();
             this.label.Location = new Point(x,y);
             this.label.Name = t;
             this.label.Text = t;
             this.label.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.label.Size = new System.Drawing.Size(sx, sy);
-            this.label.Font = new System.Drawing.Font("Microsoft Sans Serif", 30f, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label.Font = new System.Drawing.Font("Microsoft Sans Serif", sz, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label.ForeColor = Color.Black;
             f.Controls.Add(this.label);
             this.label.BringToFront();
@@ -46,7 +46,7 @@ namespace GameGameGameV1GernGame {
             return this.label;
         } // method to make a label
 
-        public void creation(MainWindow f, bool n = false) { //må ha i instillinger
+        public void creation(MainWindow f, bool n = false) {
             ff = f;
             menuBackground(f);
             if (n) {
@@ -54,8 +54,9 @@ namespace GameGameGameV1GernGame {
             } else {
                 Lab.Add(menuText(f, f.Width / 2 - 100, 20, "Resume"));
             }
-            //Lab.Add(menuText(f, f.Width/2-100, 220, "Options"));
-            Lab.Add(menuText(f, f.Width/2-100, 220, "Restart"));
+            Lab.Add(menuText(f, f.Width / 2 - 100, 125, "Restart"));
+            Lab.Add(menuText(f, f.Width / 2 - 100, 230, "Login", 200, 80, 20f));
+            Lab.Add(menuText(f, f.Width/2-100, 315, "Dubaditara?", 200, 80, 20f));
             Lab.Add(menuText(f, f.Width/2-100, 420, "Quit"));
             f._tick.Stop();
         } // creates the meny
@@ -84,6 +85,9 @@ namespace GameGameGameV1GernGame {
                     ff = null;
                     break;
                 case "Settings":
+                    break;
+                case "Login":
+                    new BasicGameV1.Login().Show();
                     break;
                 case "Quit":
                     Application.Exit();

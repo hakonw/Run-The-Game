@@ -11,7 +11,9 @@ using System.Windows.Forms;
 namespace GameGameGameV1GernGame {
     public partial class MainWindow : Form {
         private bool flip_is_right = false;
+        private bool enemy_is_right = false;
         private int antijump = 0;
+        int x_1, y_1;
 
         List<Panel> blockList = new List<Panel>();
         private System.Windows.Forms.Panel panel;
@@ -36,8 +38,6 @@ namespace GameGameGameV1GernGame {
             reset();
             UpdateScreen(null, null);
             new Menu().creation(this, true);
-
-
         }
 
         private void MainWindow_KeyDown(object sender, KeyEventArgs e) {
@@ -52,13 +52,17 @@ namespace GameGameGameV1GernGame {
         private void UpdateScreen(object sender, EventArgs e) {
             //if (!_tick.Enabled) { _tick.Enabled = true; }
 
-
-
             if (Input.KeyPressed(Keys.Escape)) { new Menu().creation(this); } // Goes to the meny
             if (Input.KeyPressed(Settings.restart)) { reset(); } // resets
 
             if (Settings.gameover) {// checks if gameover
-                
+                if (!gameoverText.Visible) {
+                    gameoverText.Visible = true;
+                    gameoverText.Location = new Point(this.Width/2 - gameoverText.Width/2, this.Height/2-100);
+                }
+
+                //gameover stuff
+
             } else {
                 if (outside(this.player)) {
                     Settings.gameover = true;
@@ -88,9 +92,10 @@ namespace GameGameGameV1GernGame {
                     if (p_1 != null) { blockList.Add(p_1); }
                 }
                 #endregion movement controll
+                labelTick.Text = "Score: " + Convert.ToString(Settings.Score++);  // tells and keeps track of the core
+                MovePlayer("down", 2); //  Non-Accelerating gravity,  might change to more real accelerating gravity
+                enemy_move(Settings.espeed);
             }
-            MovePlayer("down", 2); //  Non-Accelerating gravity,  might change to more real accelerating gravity
-
         } // runs every tick
 
 
@@ -119,11 +124,16 @@ namespace GameGameGameV1GernGame {
                     default:
                         break;
                 }
-                if (collisioncheck(this.player, blockList)) { try { MovePlayer(direction, -m / Settings.mspeed, true); } catch (System.StackOverflowException) { /* "infinite loop" */ MovePlayer(direction, -m*2 / Settings.mspeed, true); } antijump = 0; }
-
-                labelTick.Text = "Score: "+Convert.ToString(Settings.Score++);  // tells and keeps track of the core
-
-            }
+               // try {  //removed due to it didnt fix the problem
+                    if (collisioncheck(this.player, blockList)) {
+                        MovePlayer(direction, -m / Settings.mspeed, true);
+                        antijump = 0;
+                    }
+              /*  } catch (System.StackOverflowException) {
+                    Console.Write("Inf1");
+                    MovePlayer(direction, -m * 2 / Settings.mspeed, true);
+                }  */
+            } 
         } // used to move the player
 
         private void Flip(string s) {
@@ -135,6 +145,17 @@ namespace GameGameGameV1GernGame {
                 flip_is_right = true;
             }
         } // used to flip image on player
+
+        private void Flip_e(string s) {
+            if (s == "left" && enemy_is_right) {
+                enemy.BackgroundImage.RotateFlip(RotateFlipType.RotateNoneFlipX);
+                enemy_is_right = false;
+            } else if (s == "right" && !enemy_is_right) {
+                enemy.BackgroundImage.RotateFlip(RotateFlipType.RotateNoneFlipX);
+                enemy_is_right = true;
+            }
+        } // used to flip image on enemy
+
 
 
         private Panel block(int x, int y, int width = 32, int height = 32, Color? c = null, Image img = null) {
@@ -167,19 +188,25 @@ namespace GameGameGameV1GernGame {
         }
 
         private bool outside(Panel p) {
-            if ((p.Location.X > -p.Width && p.Location.X < (this.Width)) && (p.Location.Y > -p.Height && p.Location.Y < (this.Height))) {
+            if ((p.Location.X > -p.Width && p.Location.X < (this.Width)) && (p.Location.Y > -(2*p.Height) && p.Location.Y < (this.Height))) {
                 return false;
             }
-            Console.WriteLine(p.Location.X + " thisX | windowX " + this.Height + " || " + p.Location.Y + " thisY | windowY " + this.Width);
+            Console.WriteLine(p.Location.X + " thisX | windowX " + this.Width + " || " + p.Location.Y + " thisY | windowY " + this.Height);
             return true;
-        }
+        } // checks if a panel is outside the screen
+
 
         private bool collisioncheck(Panel p, List<Panel> LP) {
-            foreach(Panel pane1 in LP) {
-                if (pane1 == null || p == null) { break; }
-                if (p.Bounds.IntersectsWith(pane1.Bounds)) {
-                    return true;
+            try {
+                foreach (Panel pane1 in LP) {
+                    if (pane1 == null || p == null) { break; }
+                    if (p.Bounds.IntersectsWith(pane1.Bounds)) {
+                        return true;
+                    }
                 }
+            }catch(System.StackOverflowException) {
+                Console.WriteLine("inf2");
+                return false; //if infinite loop, allow to passtru the block
             }
             return false;
         } // used to check if collision between two panels
@@ -189,7 +216,7 @@ namespace GameGameGameV1GernGame {
                 if (pp == null || blockList == null) { break; }
                 pp.Dispose();
             } // goes thru all the panels in the lists and disposes of them
-            blockList.Clear();
+            blockList.Clear(); // clears the list
 
             new Settings(); //intilialize the settings
             this.player.BackgroundImage = Settings.playert;
@@ -200,9 +227,53 @@ namespace GameGameGameV1GernGame {
             drawplatform(); // redraw the platform
             this.player.Location = new Point(this.Width/2, this.Height/2); // posission of player
             Settings.gameover = false;
+            this.gameoverText.Visible = false;
             Settings.Score = 0;
             Input.ChangeState(Settings.restart, false);
+
+            this.enemy.Location = new Point(0,0);
+            this.enemy.BackgroundImage = Settings.enemyt;
+            this.enemy.BackColor = Color.Transparent;
         }
+
+
+        #region enemy
+
+        private void enemy_move(int speed) {
+            speed = Settings.Score / 350 + speed;
+            if (this.player.Location.X > this.enemy.Location.X) {
+                x_1 = 1;
+                Flip_e("left");
+            } else if(this.player.Location.X == this.enemy.Location.X) {
+                x_1 = 0;
+            }else{ 
+                x_1 = -1;
+                Flip_e("right");
+            }
+
+            if (this.player.Location.Y > this.enemy.Location.Y) {
+                y_1 = 1;
+            } else if (this.player.Location.Y == this.enemy.Location.Y) {
+                y_1 = 0;
+            } else {
+                y_1 = -1;
+            }
+
+            if (collisioncheck(this.enemy, blockList)) {
+                speed = speed*2/3;
+            }
+
+            this.enemy.Location = new Point(this.enemy.Location.X + x_1*speed , this.enemy.Location.Y + y_1*speed);
+            this.enemy.Refresh();
+
+
+            if (this.enemy.Bounds.IntersectsWith(this.player.Bounds)) {
+                Settings.gameover = true;
+
+            }
+        }
+
+        #endregion enemy
 
         //end
     }
