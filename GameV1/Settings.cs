@@ -42,6 +42,7 @@ namespace GameGameGameV1GernGame {
         public static Keys boost { get; set; }
         public static Keys sneak { get; set; }
         public static System.Drawing.Image playert { get; set; }
+        public static string name { get; set; } = "Krenger";
         //box properties
         public static int boxw { get; set; }
         public static int boxh { get; set; }
@@ -50,6 +51,7 @@ namespace GameGameGameV1GernGame {
         public static System.Drawing.Image enemyt { get; set; }
         public static int espeed { get; set; }
         //other properties
+        public static string scorefile { get; set; }
         //public static MenuOptions mOptions { get; set; }
 
         #endregion
@@ -62,6 +64,7 @@ namespace GameGameGameV1GernGame {
             tickjump = 10; // ammount of ticks you can jump
             restart = Keys.R; // restart button
             quit = Keys.Q; // quit button
+            //name = null; // name of the person
 
             //player properties
             mspeed = 2; // this is pixelmovement*2 pr tick
@@ -83,6 +86,9 @@ namespace GameGameGameV1GernGame {
             //enemy properties
             enemyt = BasicGameV1.Properties.Resources.enemy_0;
             espeed = 2;
+
+            //scoreboard 
+            scorefile = @"C:\Users\" + Environment.UserName + @"\Desktop\Remember-the-one-time-i-tried-to-make-a-souffle.questionmark";
         }
 
     }

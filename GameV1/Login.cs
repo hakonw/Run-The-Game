@@ -7,7 +7,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.IO;
 
 namespace BasicGameV1 {
     public partial class Login : Form {
@@ -15,24 +14,9 @@ namespace BasicGameV1 {
             InitializeComponent();
         }
 
-
-        private void go() {
+        private void button1_Click(object sender, EventArgs e) {
+            GameGameGameV1GernGame.Settings.name = usernameBox.Text;
             this.Hide();
-        }
-
-        private void loginButton_Click(object sender, EventArgs e) {
-            //sjekke om valid brukernavn
-            //så åpne spillet
-            go();
-        }
-
-        private void skip_Click(object sender, EventArgs e) {
-            //om du hater å logge inn
-            go();
-        }
-
-        private void register_Click(object sender, EventArgs e) {
-            //kode for å registrere
         }
     }
 }

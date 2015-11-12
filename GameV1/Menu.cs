@@ -14,7 +14,6 @@ namespace GameGameGameV1GernGame {
         List<Label> Lab = new List<Label>();
 
         public Menu() {
-            //gjør menystuff her
         }
 
         private void menuBackground(MainWindow f) {
@@ -29,7 +28,7 @@ namespace GameGameGameV1GernGame {
             this.panel.BringToFront();
         } // method to make the menu background
 
-        private Label menuText(MainWindow f, int x, int y, string t, int sx = 200, int sy = 100, float sz = 30f) {
+        private Label menuText(MainWindow f, int x, int y, string t, int sx = 200, int sy = 100, float sz = 30f, Color? c = null) {
             this.label = new System.Windows.Forms.Label();
             this.label.Location = new Point(x,y);
             this.label.Name = t;
@@ -37,14 +36,14 @@ namespace GameGameGameV1GernGame {
             this.label.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.label.Size = new System.Drawing.Size(sx, sy);
             this.label.Font = new System.Drawing.Font("Microsoft Sans Serif", sz, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label.ForeColor = Color.Black;
+            this.label.ForeColor = c ?? Color.Black;
             f.Controls.Add(this.label);
             this.label.BringToFront();
             this.label.MouseEnter += new System.EventHandler(this.labelEnter);
             this.label.MouseLeave += new System.EventHandler(this.labelLeave);
             this.label.Click += new System.EventHandler(this.labelClick);
             return this.label;
-        } // method to make a label
+        } // method to make a labels with text 
 
         public void creation(MainWindow f, bool n = false) {
             ff = f;
@@ -55,11 +54,11 @@ namespace GameGameGameV1GernGame {
                 Lab.Add(menuText(f, f.Width / 2 - 100, 20, "Resume"));
             }
             Lab.Add(menuText(f, f.Width / 2 - 100, 125, "Restart"));
-            Lab.Add(menuText(f, f.Width / 2 - 100, 230, "Login", 200, 80, 20f));
+            Lab.Add(menuText(f, f.Width / 2 - 100, 230, "Name", 200, 80, 20f));
             Lab.Add(menuText(f, f.Width/2-100, 315, "Dubaditara?", 200, 80, 20f));
             Lab.Add(menuText(f, f.Width/2-100, 420, "Quit"));
             f._tick.Stop();
-        } // creates the meny
+        } // creates the menu
 
         private void labelEnter(object sender, EventArgs e) {
             ((Label)sender).ForeColor = Color.Red; 
@@ -85,15 +84,16 @@ namespace GameGameGameV1GernGame {
                     ff = null;
                     break;
                 case "Settings":
+                    //not used, yet
                     break;
-                case "Login":
+                case "Name":
                     new BasicGameV1.Login().Show();
                     break;
                 case "Quit":
                     Application.Exit();
                     break;
             }
-        }
+        } 
 
         private void decreation() {
             this.panel.Dispose();
@@ -101,7 +101,7 @@ namespace GameGameGameV1GernGame {
                 pp.Dispose();
             }
             Lab.Clear();
-        } // removes the meny
+        } // removes the menu
 
         // end
     }

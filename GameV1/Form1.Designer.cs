@@ -29,6 +29,7 @@
             this.gameoverText = new System.Windows.Forms.Label();
             this.enemy = new System.Windows.Forms.Panel();
             this.player = new System.Windows.Forms.Panel();
+            this.Scoreboard = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // _tick
@@ -79,11 +80,27 @@
             this.player.Size = new System.Drawing.Size(57, 59);
             this.player.TabIndex = 0;
             // 
+            // Scoreboard
+            // 
+            this.Scoreboard.AutoSize = true;
+            this.Scoreboard.BackColor = System.Drawing.Color.Transparent;
+            this.Scoreboard.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Scoreboard.Location = new System.Drawing.Point(774, 73);
+            this.Scoreboard.Name = "Scoreboard";
+            this.Scoreboard.Size = new System.Drawing.Size(125, 240);
+            this.Scoreboard.TabIndex = 4;
+            this.Scoreboard.Text = "Spermi:10000\r\nSpermi:9999\r\nSpermi:9998\r\nSpermi:9997\r\nSpermi:9996\r\nSpermi:9995\r\nSp" +
+    "ermi:9994\r\nSpermi:9993\r\nSpermi:9992\r\nSpermi:9991\r\n";
+            this.Scoreboard.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.Scoreboard.Visible = false;
+            this.Scoreboard.Click += new System.EventHandler(this.scoreboardR);
+            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1029, 525);
+            this.Controls.Add(this.Scoreboard);
             this.Controls.Add(this.enemy);
             this.Controls.Add(this.gameoverText);
             this.Controls.Add(this.labelTick);
@@ -107,6 +124,7 @@
         private System.Windows.Forms.Label labelTick;
         private System.Windows.Forms.Label gameoverText;
         private System.Windows.Forms.Panel enemy;
+        private System.Windows.Forms.Label Scoreboard;
     }
 }
 

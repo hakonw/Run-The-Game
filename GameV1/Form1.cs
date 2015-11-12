@@ -7,18 +7,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.IO;
 
 namespace GameGameGameV1GernGame {
     public partial class MainWindow : Form {
         private bool flip_is_right = false;
         private bool enemy_is_right = false;
         private int antijump = 0;
-        int x_1, y_1;
 
         List<Panel> blockList = new List<Panel>();
         private System.Windows.Forms.Panel panel;
 
-        #region antiflic 
+        #region antiflic borderless
         /// <summary>
         /// fixing the antiflic
         /// from http://stackoverflow.com/a/25648710
@@ -30,13 +30,29 @@ namespace GameGameGameV1GernGame {
                 return handleParam;
             }
         }
+
+        protected override void WndProc(ref Message m) // Used to be able to move the borderless window
+                {
+            switch (m.Msg) {
+                case 0x84:
+                    base.WndProc(ref m);
+                    if ((int)m.Result == 0x1)
+                        m.Result = (IntPtr)0x2;
+                    return;
+            }
+
+            base.WndProc(ref m);
+        }
+
         #endregion
+
+
 
         public MainWindow() {
             InitializeComponent();
-
             reset();
             UpdateScreen(null, null);
+            scoreboardF();
             new Menu().creation(this, true);
         }
 
@@ -52,16 +68,27 @@ namespace GameGameGameV1GernGame {
         private void UpdateScreen(object sender, EventArgs e) {
             //if (!_tick.Enabled) { _tick.Enabled = true; }
 
-            if (Input.KeyPressed(Keys.Escape)) { new Menu().creation(this); } // Goes to the meny
+            if (Input.KeyPressed(Keys.Escape)) { new Menu().creation(this); } // Goes to the menu
             if (Input.KeyPressed(Settings.restart)) { reset(); } // resets
 
             if (Settings.gameover) {// checks if gameover
                 if (!gameoverText.Visible) {
+
+
                     gameoverText.Visible = true;
                     gameoverText.Location = new Point(this.Width/2 - gameoverText.Width/2, this.Height/2-100);
-                }
 
-                //gameover stuff
+                    scoreboardF((10000-Settings.Score-1) + "#" + Settings.name + ":" + (Settings.Score-1));
+                }
+                    this.Scoreboard.Text = null;
+                    string[] sss = scoreboardF();
+                    Array.Sort(sss);
+                    foreach (string ss in sss) {
+                    string[] foo = ss.Split('#');
+                    this.Scoreboard.Text += foo[1] + "\n\r";
+
+                    this.Scoreboard.Visible = true;
+                }
 
             } else {
                 if (outside(this.player)) {
@@ -146,18 +173,6 @@ namespace GameGameGameV1GernGame {
             }
         } // used to flip image on player
 
-        private void Flip_e(string s) {
-            if (s == "left" && enemy_is_right) {
-                enemy.BackgroundImage.RotateFlip(RotateFlipType.RotateNoneFlipX);
-                enemy_is_right = false;
-            } else if (s == "right" && !enemy_is_right) {
-                enemy.BackgroundImage.RotateFlip(RotateFlipType.RotateNoneFlipX);
-                enemy_is_right = true;
-            }
-        } // used to flip image on enemy
-
-
-
         private Panel block(int x, int y, int width = 32, int height = 32, Color? c = null, Image img = null) {
             this.panel = new System.Windows.Forms.Panel();
             this.panel.BackColor = c ?? Color.Transparent;
@@ -230,17 +245,21 @@ namespace GameGameGameV1GernGame {
             this.gameoverText.Visible = false;
             Settings.Score = 0;
             Input.ChangeState(Settings.restart, false);
+            Scoreboard.Visible = false;
 
             this.enemy.Location = new Point(0,0);
             this.enemy.BackgroundImage = Settings.enemyt;
             this.enemy.BackColor = Color.Transparent;
+            enemy_is_right = false;
         }
 
 
         #region enemy
 
         private void enemy_move(int speed) {
+            int x_1, y_1;
             speed = Settings.Score / 350 + speed;
+
             if (this.player.Location.X > this.enemy.Location.X) {
                 x_1 = 1;
                 Flip_e("left");
@@ -261,7 +280,7 @@ namespace GameGameGameV1GernGame {
 
             if (collisioncheck(this.enemy, blockList)) {
                 speed = speed*2/3;
-            }
+            } // reduces the speed if moving tru an object
 
             this.enemy.Location = new Point(this.enemy.Location.X + x_1*speed , this.enemy.Location.Y + y_1*speed);
             this.enemy.Refresh();
@@ -273,7 +292,50 @@ namespace GameGameGameV1GernGame {
             }
         }
 
+        private void Flip_e(string s) {
+            if (s == "left" && enemy_is_right) {
+                enemy.BackgroundImage.RotateFlip(RotateFlipType.RotateNoneFlipX);
+                enemy_is_right = false;
+            } else if (s == "right" && !enemy_is_right) {
+                enemy.BackgroundImage.RotateFlip(RotateFlipType.RotateNoneFlipX);
+                enemy_is_right = true;
+            }
+        } // used to flip image on enemy
+
         #endregion enemy
+
+
+        #region scoreboard
+        private string[] scoreboardF() {
+
+            if (!File.Exists(Settings.scorefile)) {
+                File.Create(Settings.scorefile).Dispose();
+                return null;
+            }
+
+            string[] s = null;
+            try {
+                s = File.ReadAllLines(Settings.scorefile);
+            }catch(Exception ex) {
+                Console.WriteLine(ex);
+                return null;
+            }
+            return s;
+        }
+
+        private void scoreboardF(string s) {
+            using (FileStream fs = new FileStream(Settings.scorefile, FileMode.Append, FileAccess.Write))
+            using (StreamWriter sw = new StreamWriter(fs)) {
+                sw.WriteLine(s);
+            }
+        }
+
+        private void scoreboardR(object sender, EventArgs e) {
+            File.Delete(Settings.scorefile);
+        }
+
+        #endregion scoreboard
+
 
         //end
     }
