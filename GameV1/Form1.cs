@@ -46,8 +46,6 @@ namespace GameGameGameV1GernGame {
 
         #endregion
 
-
-
         public MainWindow() {
             InitializeComponent();
             reset();
@@ -66,18 +64,13 @@ namespace GameGameGameV1GernGame {
         }
 
         private void UpdateScreen(object sender, EventArgs e) {
-            //if (!_tick.Enabled) { _tick.Enabled = true; }
-
             if (Input.KeyPressed(Keys.Escape)) { new Menu().creation(this); } // Goes to the menu
             if (Input.KeyPressed(Settings.restart)) { reset(); } // resets
 
             if (Settings.gameover) {// checks if gameover
                 if (!gameoverText.Visible) {
-
-
                     gameoverText.Visible = true;
                     gameoverText.Location = new Point(this.Width/2 - gameoverText.Width/2, this.Height/2-100);
-
                     scoreboardF((10000-Settings.Score-1) + "#" + Settings.name + ":" + (Settings.Score-1));
                 }
                     this.Scoreboard.Text = null;
@@ -86,10 +79,8 @@ namespace GameGameGameV1GernGame {
                     foreach (string ss in sss) {
                     string[] foo = ss.Split('#');
                     this.Scoreboard.Text += foo[1] + "\n\r";
-
                     this.Scoreboard.Visible = true;
                 }
-
             } else {
                 if (outside(this.player)) {
                     Settings.gameover = true;
@@ -124,8 +115,6 @@ namespace GameGameGameV1GernGame {
                 enemy_move(Settings.espeed);
             }
         } // runs every tick
-
-
 
         private void MovePlayer(string direction = null, int m = 3, bool force = false, int boost = 1) {
             if (!collisioncheck(this.player, blockList) || force) {
@@ -222,6 +211,8 @@ namespace GameGameGameV1GernGame {
             }catch(System.StackOverflowException) {
                 Console.WriteLine("inf2");
                 return false; //if infinite loop, allow to passtru the block
+            } catch (Exception) {
+                Input.ChangeState(Settings.restart, true);
             }
             return false;
         } // used to check if collision between two panels
@@ -252,8 +243,6 @@ namespace GameGameGameV1GernGame {
             this.enemy.BackColor = Color.Transparent;
             enemy_is_right = false;
         }
-
-
         #region enemy
 
         private void enemy_move(int speed) {
@@ -283,12 +272,8 @@ namespace GameGameGameV1GernGame {
             } // reduces the speed if moving tru an object
 
             this.enemy.Location = new Point(this.enemy.Location.X + x_1*speed , this.enemy.Location.Y + y_1*speed);
-            this.enemy.Refresh();
-
-
             if (this.enemy.Bounds.IntersectsWith(this.player.Bounds)) {
                 Settings.gameover = true;
-
             }
         }
 
@@ -301,10 +286,8 @@ namespace GameGameGameV1GernGame {
                 enemy_is_right = true;
             }
         } // used to flip image on enemy
-
         #endregion enemy
-
-
+        
         #region scoreboard
         private string[] scoreboardF() {
 
@@ -335,8 +318,5 @@ namespace GameGameGameV1GernGame {
         }
 
         #endregion scoreboard
-
-
-        //end
     }
 }

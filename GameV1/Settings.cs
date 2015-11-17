@@ -14,16 +14,9 @@ namespace GameGameGameV1GernGame {
         Right
     } //will change it to this later
 
-    public enum MenuOptions {
-        Resume,
-        Settings,
-        Quit
-    } //will maby change to this later
-
     class Settings {
 
     #region get;set values
-
         //world properties 
         public static bool gameover { get; set; }
         public static int Score { get; set; }
@@ -53,9 +46,7 @@ namespace GameGameGameV1GernGame {
         //other properties
         public static string scorefile { get; set; }
         //public static MenuOptions mOptions { get; set; }
-
         #endregion
-
 
         public Settings() {
             //world properties 
@@ -90,6 +81,5 @@ namespace GameGameGameV1GernGame {
             //scoreboard 
             scorefile = @"C:\Users\" + Environment.UserName + @"\Desktop\Remember-the-one-time-i-tried-to-make-a-souffle.questionmark";
         }
-
     }
 }

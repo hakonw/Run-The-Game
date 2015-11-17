@@ -102,8 +102,6 @@ namespace GameGameGameV1GernGame {
             }
             Lab.Clear();
         } // removes the menu
-
-        // end
     }
 }
 
